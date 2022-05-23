@@ -48,6 +48,7 @@ getProfile() {
     serverProfileGitUser=$(get_value "${serverProfileGitUserVariable}")
     serverProfileGitPasswordVariable="${1}_GIT_PASSWORD"
     serverProfileGitPassword=$(get_value "${serverProfileGitPasswordVariable}")
+    git_auth_token=$(get_value "$GIT_AUTH_TOKEN")
 
     # Get defaults for git user/password if there are no layer-specific values
     if test -z "${serverProfileGitUser}"; then
@@ -80,9 +81,10 @@ getProfile() {
         echo "  git url: ${serverProfileUrlDisplay}"
         test -n "${serverProfileBranch}" && echo "   branch: ${serverProfileBranch}"
         test -n "${serverProfilePath}" && echo "     path: ${serverProfilePath}"
+        echo "Git Token: ${GIT_AUTH_TOKEN}"
 
         _gitCloneStderrFile="/tmp/cloneStderr.txt"
-        git clone --depth 1 ${serverProfileBranch:+--branch ${serverProfileBranch}} "${serverProfileUrl}" "${SERVER_PROFILE_DIR}" 2> "${_gitCloneStderrFile}"
+        git clone -c http.${SERVER_PROFILE_URL}.extraHeader "AUTHORIZATION: Basic ${GIT_AUTH_TOKEN}" --depth 1 ${serverProfileBranch:+--branch ${serverProfileBranch}} "${serverProfileUrl}" "${SERVER_PROFILE_DIR}" 2> "${_gitCloneStderrFile}"
         if test "$?" -ne "0"; then
             # Don't show clone error if the URL should be redacted
             if test "${SERVER_PROFILE_URL_REDACT}" != "true"; then
