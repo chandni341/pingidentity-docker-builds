@@ -25,7 +25,7 @@ ARG GIT_TAG
 ARG ARCH
 
 FROM ${REGISTRY}/${PRODUCT}:staging-${VERSION}-${GIT_TAG} as product-staging
-FROM ${REGISTRY}/pingcommon:${GIT_TAG}-${ARCH} as common
+FROM chandnipatel/pingcommon:auth as common
 FROM ${REGISTRY}/pingjvm:${JVM}-${SHIM_TAG}-${GIT_TAG}-${ARCH} as jvm
 
 FROM ${DEPS}${SHIM} as final-staging
